@@ -1,30 +1,79 @@
-import webbrowser
 import random
-from pytube import YouTube, Search
+import webbrowser
+import os
+from pytube import Search
+
+# File to store the song list
+SONGS_FILE = "songs.txt"
+
+def load_songs():
+    """Load songs from the file."""
+    if os.path.exists(SONGS_FILE):
+        with open(SONGS_FILE, "r") as file:
+            lines = file.readlines()
+            return {int(line.split('|')[0].strip()): line.split('|')[1].strip() for line in lines}
+    return {}
+
+def save_songs(songs):
+    """Save songs to the file."""
+    with open(SONGS_FILE, "w") as file:
+        for index, song in sorted(songs.items()):
+            file.write(f"{index} | {song}\n")
 
 # List of initial songs
-songs = [
-    "Shape of You",
-    "Blinding Lights",
-    "Dance Monkey",
-    "Someone You Loved",
-    "Sunflower"
-]
+songs = load_songs() or {
+    1: "Shape of You",
+    2: "Blinding Lights",
+    3: "Dance Monkey",
+    4: "Someone You Loved",
+    5: "Sunflower"
+}
 
-def add_song():
+def add_song(songs):
     song_name = input("Enter the song name to add: ")
-    songs.append(song_name)
+    new_index = max(songs.keys(), default=0) + 1
+    songs[new_index] = song_name
+    save_songs(songs)
     print(f"'{song_name}' has been added to the library.")
 
-def play_random_song():
-    song = random.choice(songs)
-    print(f"Playing a random song: {song}")
-    play_song(song)
+def delete_song(songs):
+    view_songs(songs)
+    try:
+        index_to_delete = int(input("Enter the index of the song to delete: "))
+        if index_to_delete in songs:
+            removed_song = songs.pop(index_to_delete)
+            # Renumber the remaining songs
+            renumbered_songs = {i + 1: song for i, song in enumerate(songs.values())}
+            save_songs(renumbered_songs)
+            print(f"'{removed_song}' has been removed from the library.")
+            return renumbered_songs
+        else:
+            print(f"No song found at index {index_to_delete}.")
+            return songs
+    except ValueError:
+        print("Invalid index. Please enter a number.")
+        return songs
 
-def suggest_song():
-    song = random.choice(songs)
-    print(f"How about listening to: {song}?")
-    play_song(song)
+def play_random_song(songs):
+    if songs:
+        song = random.choice(list(songs.values()))
+        print(f"Playing a random song: {song}")
+        play_song(song)
+    else:
+        print("The song library is empty. Add some songs first.")
+
+def suggest_song(songs):
+    if songs:
+        song = random.choice(list(songs.values()))
+        print(f"How about listening to: {song}?")
+        play_song(song)
+    else:
+        print("The song library is empty. Add some songs first.")
+
+def view_songs(songs):
+    print("\nCurrent song library:")
+    for index, song in sorted(songs.items()):
+        print(f"{index}: {song}")
 
 def play_song(song):
     search = Search(song)
@@ -32,36 +81,41 @@ def play_song(song):
     print(f"Playing: {video_url}")
     webbrowser.open(video_url)
 
-def play_desired():
-    song = input("Enter song name : ")
-    print(f"Playing a random song: {song}")
-    play_song(song)
+def show_menu():
+    print("\nMusic Library Menu:")
+    print("1. Add a song")
+    print("2. Delete a song")
+    print("3. Play desired song")
+    print("4. Play a random song")
+    print("5. Suggest a song")
+    print("6. View all songs")
+    print("0. Exit")
 
-def menu():
+def main():
+    global songs
     while True:
-        print("\nMusic Library Menu:")
-        print("1. Add a song")
-        print("2. Play desired song")
-        print("3. Play a random song")
-        print("4. Suggest a song")
-        print("0. Exit")
-        
-        choice = input("Choose an option (1-4): ")
-        
-        if choice == '1':
-            add_song()
-        elif choice == '2':
-            play_desired()
-        elif choice == '3':
-            play_random_song()
-        elif choice == '4':
-            suggest_song()
+        show_menu()
+        choice = input("Choose an option (0-6): ")
 
+        if choice == '1':
+            add_song(songs)
+        elif choice == '2':
+            songs = delete_song(songs)
+        elif choice == '3':
+            song_name = input("Enter song name: ")
+            print(f"Playing '{song_name}'.")
+            play_song(song_name)
+        elif choice == '4':
+            play_random_song(songs)
+        elif choice == '5':
+            suggest_song(songs)
+        elif choice == '6':
+            view_songs(songs)
         elif choice == '0':
             print("Exiting the music library.")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 4.")
+            print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
-    menu()
+    main()
