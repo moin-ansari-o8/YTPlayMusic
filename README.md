@@ -28,4 +28,7 @@ To install the `pytube` library, use the following command:
 
 ```bash
 pip install pytube
+```
+## Contributing
 
+Feel free to fork the repository and submit pull requests. For any issues or suggestions, please open an issue on GitHub.
