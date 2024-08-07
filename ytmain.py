@@ -3,31 +3,33 @@ import webbrowser
 import os
 from pytube import Search
 
-# File to store the song list
-SONGS_FILE = "songs.txt"
+SONGS_FILE = "GitProjects/YTPlayMusic/songs.txt"  # Ensure the path is correct
 
 def load_songs():
-    """Load songs from the file."""
+    # Loads songs from the file provided
     if os.path.exists(SONGS_FILE):
+        songs = {}
         with open(SONGS_FILE, "r") as file:
-            lines = file.readlines()
-            return {int(line.split('|')[0].strip()): line.split('|')[1].strip() for line in lines}
+            for line in file:
+                line = line.strip()
+                if line:  # Check if line is not empty
+                    try:
+                        index, song = line.split('|', 1)
+                        index = int(index.strip())
+                        song = song.strip()
+                        songs[index] = song
+                    except ValueError:
+                        print(f"Skipping invalid line: {line}")
+        return songs
     return {}
 
-def save_songs(songs):
-    """Save songs to the file."""
+def save_songs(songs):  # Save songs to the file
     with open(SONGS_FILE, "w") as file:
         for index, song in sorted(songs.items()):
-            file.write(f"{index} | {song}\n")
+            file.write(f"{index} | {song}\n")  # Always saves new song in new line
 
 # List of initial songs
-songs = load_songs() or {
-    1: "Shape of You",
-    2: "Blinding Lights",
-    3: "Dance Monkey",
-    4: "Someone You Loved",
-    5: "Sunflower"
-}
+songs = load_songs() 
 
 def add_song(songs):
     song_name = input("Enter the song name to add: ")
@@ -37,6 +39,10 @@ def add_song(songs):
     print(f"'{song_name}' has been added to the library.")
 
 def delete_song(songs):
+    if not songs:
+        print("No songs available to delete.")
+        return songs
+    
     view_songs(songs)
     try:
         index_to_delete = int(input("Enter the index of the song to delete: "))
@@ -71,9 +77,12 @@ def suggest_song(songs):
         print("The song library is empty. Add some songs first.")
 
 def view_songs(songs):
-    print("\nCurrent song library:")
-    for index, song in sorted(songs.items()):
-        print(f"{index}: {song}")
+    if not songs:
+        print("No songs available.")
+    else:
+        print("\nCurrent song library:")
+        for index, song in sorted(songs.items()):
+            print(f"{index}: {song}")
 
 def play_song(song):
     search = Search(song)
