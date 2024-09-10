@@ -28,8 +28,3 @@ pip install pytube
 ## Contributing
 
 Feel free to fork the repository and submit pull requests. For any issues or suggestions, please open an issue on GitHub.
-
-## License
-
-This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
-
