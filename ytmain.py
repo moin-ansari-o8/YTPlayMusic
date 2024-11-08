@@ -3,7 +3,7 @@ import webbrowser
 import os
 from pytube import Search
 
-SONGS_FILE = "GitProjects/YTPlayMusic/songs.txt"  # Ensure the path is correct
+SONGS_FILE = "GIT_PROJECTS/YTPlayMusic/songs.txt"  # Ensure the path is correct
 
 def load_songs():
     # Loads songs from the file provided
