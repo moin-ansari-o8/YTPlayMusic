@@ -3,7 +3,7 @@ import webbrowser
 import os
 from pytube import Search
 
-SONGS_FILE = "GIT_PROJECTS/YTPlayMusic/songs.txt"  # Ensure the path is correct
+SONGS_FILE = "E:\STDY\GIT_PROJECTS\YTPlayMusic\songs.txt"  # Ensure the path is correct
 
 def load_songs():
     # Loads songs from the file provided
@@ -26,7 +26,7 @@ def load_songs():
 def save_songs(songs):  # Save songs to the file
     with open(SONGS_FILE, "w") as file:
         for index, song in sorted(songs.items()):
-            file.write(f"{index} | {song}\n")  # Always saves new song in new line
+            file.write(f"{index} | {song} original\n")  # Always saves new song in new line
 
 # List of initial songs
 songs = load_songs() 
@@ -113,6 +113,10 @@ def main():
         elif choice == '3':
             song_name = input("Enter song name: ")
             print(f"Playing '{song_name}'.")
+            new_index = max(songs.keys(), default=0) + 1
+            songs[new_index] = song_name
+            save_songs(songs)
+            print(f"'{song_name}' has been added to the library.")
             play_song(song_name)
         elif choice == '4':
             play_random_song(songs)
